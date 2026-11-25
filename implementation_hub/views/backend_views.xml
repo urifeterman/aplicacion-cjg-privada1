@@ -103,6 +103,7 @@
                 <field name="project_id"/>
                 <field name="action"/>
                 <field name="resource_model"/>
+                <field name="resource_id"/>
                 <field name="resource_name"/>
                 <field name="previous_scope"/>
                 <field name="new_scope"/>
