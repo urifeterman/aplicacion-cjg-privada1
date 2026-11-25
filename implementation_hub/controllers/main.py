@@ -12,7 +12,7 @@ class ImplementationHubController(http.Controller):
         "at_risk": "En riesgo",
         "off_track": "Fuera de plan",
         "on_hold": "En pausa",
-        "to_define": "Pendiente de definir",
+        "to_define": "Sin actualización publicada",
         "done": "Finalizado",
     }
     TASK_STATE_LABELS = {
