@@ -100,3 +100,13 @@ El documento de alcance deja pendientes:
 | Inspección de campos internos | Horas, costos, márgenes y notas privadas ausentes del payload | Pendiente de ejecutar |
 
 El workflow de validación estática se añadió al repositorio, pero desde esta sesión no se pudo consultar el resultado de GitHub Actions. No se marca como aprobado.
+
+
+## Limitaciones funcionales conocidas de esta primera versión
+
+- Helpdesk: el menú existe como sección informativa, pero no hay consulta de tickets. Cuando se integre, debe conservar la regla de Odoo 18: el Portal solo consulta tickets que sigue en equipos con visibilidad Portal habilitada.
+- Documents: no se consulta el modelo de la aplicación Documents ni sus espacios de trabajo. Se listan solamente adjuntos directos marcados en proyecto/tarea/hito/actualización.
+- No se publica el nombre de asignados internos como “responsable público”: el documento no define qué identidades del equipo pueden exponerse. La línea de tiempo presenta estados y comentarios que son públicos.
+- Notificaciones push quedan fuera de esta fase según el alcance original.
+- El avance usa exclusivamente elementos publicados como numerador y denominador. Es una elección conservadora para no revelar la cantidad/estado de elementos ocultos; requiere aprobación funcional frente a la fórmula propuesta en el PDF.
+
