@@ -252,7 +252,7 @@
                         <t t-elif="state.section === 'tickets'">
                             <h2 class="h4 mb-3">Tickets de soporte</h2>
                             <div class="alert alert-info">
-                                La integración de Helpdesk queda pendiente de verificar que la aplicación esté instalada en la base Odoo destino y revisar su modelo y permisos reales.
+                                La integración de Helpdesk está pendiente de confirmar su instalación y configuración. En Odoo 18, el Portal solo puede consultar los tickets que sigue cuando el equipo permite visibilidad a usuarios Portal.
                             </div>
                         </t>
 
