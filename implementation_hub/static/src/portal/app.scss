@@ -1,0 +1,86 @@
+.o_implementation_hub {
+    color: #172033;
+
+    .o_ih_layout {
+        display: grid;
+        grid-template-columns: 15rem minmax(0, 1fr);
+        gap: 1.25rem;
+        align-items: start;
+    }
+
+    .o_ih_sidebar {
+        position: sticky;
+        top: 1rem;
+        border-radius: 0.9rem;
+    }
+
+    .o_ih_nav_item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        width: 100%;
+        border: 0;
+        border-radius: 0.65rem;
+        padding: 0.8rem 0.9rem;
+        background: transparent;
+        color: #4b5870;
+        text-align: left;
+        margin: 0.15rem 0;
+
+        i { width: 1rem; text-align: center; }
+
+        &:hover, &.active {
+            background: #edf2fc;
+            color: #244a91;
+        }
+
+        &.active { font-weight: 600; }
+    }
+
+    .o_ih_project_card, .o_ih_metric {
+        border: 0;
+        border-radius: 0.9rem;
+        box-shadow: 0 0.2rem 0.9rem rgba(25, 42, 74, 0.06);
+    }
+
+    .progress {
+        height: 0.6rem;
+        border-radius: 999px;
+        background: #e8edf5;
+    }
+
+    .progress-bar {
+        border-radius: 999px;
+        background: #3157a4;
+    }
+
+    @media (max-width: 991.98px) {
+        .o_ih_layout {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .o_ih_sidebar {
+            position: static;
+            overflow-x: auto;
+
+            .card-body {
+                display: flex;
+                min-width: max-content;
+                gap: 0.25rem;
+            }
+        }
+
+        .o_ih_nav_item {
+            width: auto;
+            white-space: nowrap;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .display-6 { font-size: 1.9rem; }
+
+        .o_ih_header .btn {
+            font-size: 0.85rem;
+        }
+    }
+}
