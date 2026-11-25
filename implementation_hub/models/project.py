@@ -39,6 +39,7 @@ class ProjectProject(models.Model):
                 "resource_id": project.id,
                 "resource_name": project.display_name,
                 "new_scope": project.implementation_hub_scope,
+                "new_progress_mode": project.implementation_hub_progress_mode,
                 "published": True,
                 "changed_by": self.env.user.id,
             })
@@ -67,25 +68,37 @@ class ProjectProject(models.Model):
         }
         if protected.intersection(vals) and not self.env.user.has_group("project.group_project_manager"):
             raise AccessError(_("Solo un administrador de Proyectos puede configurar Implementation Hub."))
-        tracked = {"implementation_hub_published", "implementation_hub_scope"}
+        tracked = {
+            "implementation_hub_published",
+            "implementation_hub_scope",
+            "implementation_hub_progress_mode",
+        }
         previous = {}
         if tracked.intersection(vals):
             previous = {
-                rec.id: (rec.implementation_hub_published, rec.implementation_hub_scope or False)
+                rec.id: (
+                    rec.implementation_hub_published,
+                    rec.implementation_hub_scope or False,
+                    rec.implementation_hub_progress_mode or False,
+                )
                 for rec in self
             }
         result = super().write(vals)
         if previous:
             values = []
             for rec in self:
-                old_published, old_scope = previous[rec.id]
+                old_published, old_scope, old_mode = previous[rec.id]
                 new_published = rec.implementation_hub_published
                 new_scope = rec.implementation_hub_scope or False
-                if (old_published, old_scope) == (new_published, new_scope):
+                new_mode = rec.implementation_hub_progress_mode or False
+                if (old_published, old_scope, old_mode) == (new_published, new_scope, new_mode):
                     continue
-                action = (
-                    "publish" if new_published else "unpublish"
-                ) if old_published != new_published else "scope_change"
+                if old_published != new_published:
+                    action = "publish" if new_published else "unpublish"
+                elif old_scope != new_scope:
+                    action = "scope_change"
+                else:
+                    action = "progress_mode_change"
                 values.append({
                     "project_id": rec.id,
                     "action": action,
@@ -94,6 +107,8 @@ class ProjectProject(models.Model):
                     "resource_name": rec.display_name,
                     "previous_scope": old_scope,
                     "new_scope": new_scope,
+                    "previous_progress_mode": old_mode,
+                    "new_progress_mode": new_mode,
                     "published": new_published,
                     "changed_by": self.env.user.id,
                 })
