@@ -14,6 +14,10 @@ on:
       - "implementation_hub/**"
       - ".github/workflows/odoo18-core-test.yml"
 
+concurrency:
+  group: odoo18-core-test-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
