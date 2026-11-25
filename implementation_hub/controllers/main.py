@@ -81,6 +81,13 @@ class ImplementationHubController(http.Controller):
 
         projects = self._portal_projects()
         project_data = [self._project_payload(project) for project in projects]
+        summary = {
+            "total": len(project_data),
+            "active": sum(item["status_key"] in {"on_track", "at_risk", "off_track", "on_hold"} for item in project_data),
+            "done": sum(item["status_key"] == "done" for item in project_data),
+            "pending": sum(item["status_key"] == "to_define" for item in project_data),
+            "delayed": sum(item["delayed"] for item in project_data),
+        }
         for item in project_data:
             # Keep the internal classification out of the client-facing whitelist.
             item.pop("status_key", None)
@@ -91,13 +98,7 @@ class ImplementationHubController(http.Controller):
                 "email": request.env.user.partner_id.email or "",
                 "company": request.env.user.partner_id.commercial_partner_id.name or "",
             },
-            "summary": {
-                "total": len(project_data),
-                "active": sum(item["status_key"] in {"on_track", "at_risk", "off_track", "on_hold"} for item in project_data),
-                "done": sum(item["status_key"] == "done" for item in project_data),
-                "pending": sum(item["status_key"] == "to_define" for item in project_data),
-                "delayed": sum(item["delayed"] for item in project_data),
-            },
+            "summary": summary,
             "projects": project_data,
             "generated_at": fields.Datetime.to_string(fields.Datetime.now()),
         }
