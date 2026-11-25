@@ -78,3 +78,25 @@ El documento de alcance deja pendientes:
 2. Regla por defecto del avance. Esta implementación exige una selección explícita por proyecto y no inventa un valor por defecto.
 3. Alcance: Implementación o también Soporte. Se ofrece selección por proyecto; el dueño del producto debe confirmar la política inicial.
 4. Datos de prototipo de ejemplo o reales tras auditoría. Esta primera versión consulta datos reales ya publicados, pero requiere validación en staging.
+
+
+## Matriz de pruebas pendiente de ejecución en la instancia destino
+
+| Caso | Resultado esperado | Estado |
+|---|---|---|
+| Instalar/actualizar módulo en Odoo 18 Enterprise | Manifiesto, ACL, reglas, vistas y assets cargan sin error | Pendiente |
+| Publicar proyecto sin cliente | No aparece en el Portal | Pendiente de ejecutar |
+| Publicar proyecto sin alcance o método de avance | El servidor rechaza la publicación | Prueba escrita; ejecución pendiente |
+| Portal de empresa A consulta proyecto de empresa B | No encontrado / no aparece | Pendiente de ejecutar |
+| Colaborador autorizado abre proyecto compartido | Solo ve recursos publicados y autorizados | Pendiente de ejecutar |
+| Tarea/hito/actualización con visibilidad desactivada | No aparece en listas ni endpoints | Pendiente de ejecutar |
+| Nota interna del chatter | Nunca aparece en la línea de tiempo | Pendiente de ejecutar |
+| Comentario público autorizado | Puede aparecer en línea de tiempo | Pendiente de ejecutar |
+| Adjunto no marcado o adjunto de recurso no visible | Descarga rechazada / not found | Pendiente de ejecutar |
+| Adjunto marcado cuyo registro padre no es accesible | Descarga rechazada / not found | Pendiente de ejecutar |
+| Proyecto sin fecha final | No se muestra retraso | Pendiente de ejecutar |
+| Progreso sin elementos publicados | Se muestra no disponible | Prueba escrita; ejecución pendiente |
+| Service Worker fuera de conexión | Solo se presenta la página genérica offline; no hay datos privados | Pendiente de ejecutar |
+| Inspección de campos internos | Horas, costos, márgenes y notas privadas ausentes del payload | Pendiente de ejecutar |
+
+El workflow de validación estática se añadió al repositorio, pero desde esta sesión no se pudo consultar el resultado de GitHub Actions. No se marca como aprobado.
