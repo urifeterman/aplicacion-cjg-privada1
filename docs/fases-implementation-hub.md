@@ -99,7 +99,7 @@ El documento de alcance deja pendientes:
 | Service Worker fuera de conexión | Solo se presenta la página genérica offline; no hay datos privados | Pendiente de ejecutar |
 | Inspección de campos internos | Horas, costos, márgenes y notas privadas ausentes del payload | Pendiente de ejecutar |
 
-El workflow de validación estática se añadió al repositorio, pero desde esta sesión no se pudo consultar el resultado de GitHub Actions. No se marca como aprobado.
+El workflow de GitHub Actions de validación estática completó con resultado `success` para el commit `d1eaee8165a65884d605f0b8fee02b7cdfe41365`. Verificó compilación de Python (módulo y script de auditoría), parseo del manifiesto, XML/CSV y sintaxis JavaScript. Esto confirma validación estática del repositorio; no equivale a instalar el módulo ni ejecutar pruebas dentro de Odoo Enterprise.
 
 
 ## Limitaciones funcionales conocidas de esta primera versión
