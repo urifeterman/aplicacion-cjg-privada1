@@ -68,3 +68,15 @@ El cálculo usa solo registros publicados para evitar que el porcentaje revele e
 ## Estado de validación
 
 Este módulo se generó contrastando las APIs generales y los modelos públicos de Odoo 18.0. No ha sido instalado ni ejecutado contra una instancia CJG Enterprise desde este entorno. La compatibilidad final de vistas, módulos Enterprise, personalizaciones, permisos y pruebas end-to-end requiere esa instancia.
+
+## Historial y administración
+
+El menú Implementation Hub permite consultar proyectos publicados, documentos y el historial. El historial registra publicación/despublicación del proyecto, cambios de alcance y publicación/despublicación de cada recurso visible (tareas, hitos, actualizaciones y adjuntos). Las acciones de publicación quedan limitadas al grupo Proyecto / Administrador.
+
+## PWA
+
+Se incluye manifest, icono SVG, registro de Service Worker y una página genérica sin conexión. El Service Worker almacena únicamente esa página genérica; no almacena respuestas privadas, adjuntos, cookies ni sesiones. La caché completa de assets del portal no se ha activado para evitar ampliar el alcance del Service Worker sobre otras páginas Odoo.
+
+## Validación automática
+
+El workflow `.github/workflows/static-validation.yml` comprueba compilación sintáctica de Python, parseo del manifest, XML, CSV y sintaxis JavaScript. Es una validación estática del repositorio; no sustituye la instalación o pruebas dentro de Odoo 18 Enterprise.
