@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="project_form_implementation_hub" model="ir.ui.view">
+        <field name="name">project.project.form.implementation.hub</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Implementation Hub" name="implementation_hub" groups="project.group_project_manager">
+                    <group>
+                        <group>
+                            <field name="implementation_hub_published"/>
+                            <field name="implementation_hub_scope"/>
+                            <field name="implementation_hub_progress_mode"/>
+                        </group>
+                        <group>
+                            <div class="text-muted">
+                                El Hub muestra únicamente proyectos publicados con cliente asignado
+                                y acceso permitido por las reglas de Odoo. Publica cada tarea, hito,
+                                actualización y documento de forma individual.
+                            </div>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_task_form_implementation_hub" model="ir.ui.view">
+        <field name="name">project.task.form.implementation.hub</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Implementation Hub" groups="project.group_project_manager">
+                    <field name="implementation_hub_visible"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_milestone_form_implementation_hub" model="ir.ui.view">
+        <field name="name">project.milestone.form.implementation.hub</field>
+        <field name="model">project.milestone</field>
+        <field name="inherit_id" ref="project.project_milestone_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Implementation Hub" groups="project.group_project_manager">
+                    <field name="implementation_hub_visible"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_update_form_implementation_hub" model="ir.ui.view">
+        <field name="name">project.update.form.implementation.hub</field>
+        <field name="model">project.update</field>
+        <field name="inherit_id" ref="project.project_update_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Implementation Hub" groups="project.group_project_manager">
+                    <field name="implementation_hub_visible"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="implementation_hub_project_list" model="ir.ui.view">
+        <field name="name">implementation.hub.project.list</field>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <list string="Proyectos publicados">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="implementation_hub_scope"/>
+                <field name="implementation_hub_published"/>
+                <field name="implementation_hub_progress_mode"/>
+                <field name="date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="implementation_hub_attachment_list" model="ir.ui.view">
+        <field name="name">implementation.hub.attachment.list</field>
+        <field name="model">ir.attachment</field>
+        <field name="arch" type="xml">
+            <list string="Documentos del Hub" create="0" delete="0">
+                <field name="name"/>
+                <field name="res_model"/>
+                <field name="res_id"/>
+                <field name="mimetype"/>
+                <field name="implementation_hub_visible" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="implementation_hub_log_list" model="ir.ui.view">
+        <field name="name">implementation.hub.publication.log.list</field>
+        <field name="model">implementation.hub.publication.log</field>
+        <field name="arch" type="xml">
+            <list string="Historial de publicación" create="0" edit="0" delete="0">
+                <field name="changed_at"/>
+                <field name="project_id"/>
+                <field name="action"/>
+                <field name="previous_scope"/>
+                <field name="new_scope"/>
+                <field name="published"/>
+                <field name="changed_by"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="implementation_hub_project_action" model="ir.actions.act_window">
+        <field name="name">Proyectos publicados</field>
+        <field name="res_model">project.project</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="implementation_hub_project_list"/>
+        <field name="domain">[('implementation_hub_published', '=', True)]</field>
+    </record>
+
+    <record id="implementation_hub_attachment_action" model="ir.actions.act_window">
+        <field name="name">Documentos</field>
+        <field name="res_model">ir.attachment</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="implementation_hub_attachment_list"/>
+        <field name="domain">[('res_model', 'in', ['project.project', 'project.task', 'project.milestone', 'project.update'])]</field>
+    </record>
+
+    <record id="implementation_hub_log_action" model="ir.actions.act_window">
+        <field name="name">Historial de publicación</field>
+        <field name="res_model">implementation.hub.publication.log</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="implementation_hub_log_list"/>
+    </record>
+
+    <menuitem id="implementation_hub_menu_root" name="Implementation Hub"
+              sequence="80" groups="project.group_project_manager"/>
+    <menuitem id="implementation_hub_menu_projects" name="Proyectos publicados"
+              parent="implementation_hub_menu_root"
+              action="implementation_hub_project_action" sequence="10"
+              groups="project.group_project_manager"/>
+    <menuitem id="implementation_hub_menu_documents" name="Documentos"
+              parent="implementation_hub_menu_root"
+              action="implementation_hub_attachment_action" sequence="20"
+              groups="project.group_project_manager"/>
+    <menuitem id="implementation_hub_menu_history" name="Historial de publicación"
+              parent="implementation_hub_menu_root"
+              action="implementation_hub_log_action" sequence="30"
+              groups="project.group_project_manager"/>
+</odoo>
