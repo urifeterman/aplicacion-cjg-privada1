@@ -13,6 +13,8 @@
                 ('implementation_hub_visible', '=', True),
                 ('project_id.implementation_hub_published', '=', True),
                 ('project_id.partner_id', '!=', False),
+                ('project_id.active', '=', True),
+                ('project_id.privacy_visibility', '=', 'portal'),
                 '|',
                     ('project_id.partner_id.commercial_partner_id', '=', user.partner_id.commercial_partner_id.id),
                     ('project_id.collaborator_ids.partner_id', '=', user.partner_id.id)
@@ -34,6 +36,7 @@
             [
                 ('implementation_hub_published', '=', True),
                 ('partner_id', '!=', False),
+                ('active', '=', True),
                 ('privacy_visibility', '=', 'portal'),
                 '|',
                     ('partner_id.commercial_partner_id', '=', user.partner_id.commercial_partner_id.id),
@@ -55,6 +58,7 @@
                 ('implementation_hub_visible', '=', True),
                 ('active', '=', True),
                 ('project_id.implementation_hub_published', '=', True),
+                ('project_id.active', '=', True),
                 ('project_id.privacy_visibility', '=', 'portal'),
                 '|',
                     ('project_id.partner_id.commercial_partner_id', '=', user.partner_id.commercial_partner_id.id),
@@ -75,6 +79,7 @@
             [
                 ('implementation_hub_visible', '=', True),
                 ('project_id.implementation_hub_published', '=', True),
+                ('project_id.active', '=', True),
                 ('project_id.privacy_visibility', '=', 'portal'),
                 '|',
                     ('project_id.partner_id.commercial_partner_id', '=', user.partner_id.commercial_partner_id.id),
