@@ -35,7 +35,9 @@
                 ('implementation_hub_published', '=', True),
                 ('partner_id', '!=', False),
                 ('privacy_visibility', '=', 'portal'),
-                ('partner_id.commercial_partner_id', '=', user.partner_id.commercial_partner_id.id)
+                '|',
+                    ('partner_id.commercial_partner_id', '=', user.partner_id.commercial_partner_id.id),
+                    ('collaborator_ids.partner_id', '=', user.partner_id.id)
             ]
         </field>
         <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
@@ -53,8 +55,10 @@
                 ('implementation_hub_visible', '=', True),
                 ('active', '=', True),
                 ('project_id.implementation_hub_published', '=', True),
-                ('project_id.partner_id.commercial_partner_id', '=', user.partner_id.commercial_partner_id.id),
-                ('project_id.privacy_visibility', '=', 'portal')
+                ('project_id.privacy_visibility', '=', 'portal'),
+                '|',
+                    ('project_id.partner_id.commercial_partner_id', '=', user.partner_id.commercial_partner_id.id),
+                    ('project_id.collaborator_ids.partner_id', '=', user.partner_id.id)
             ]
         </field>
         <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
