@@ -12,10 +12,17 @@ class ImplementationHubPublicationLog(models.Model):
         ondelete="cascade", index=True,
     )
     action = fields.Selection([
-        ("publish", "Publicado"),
-        ("unpublish", "Despublicado"),
+        ("publish", "Proyecto publicado"),
+        ("unpublish", "Proyecto despublicado"),
         ("scope_change", "Cambio de alcance"),
+        ("publish_resource", "Recurso publicado"),
+        ("unpublish_resource", "Recurso despublicado"),
     ], string="Acción", required=True, readonly=True)
+    resource_model = fields.Char(string="Modelo del recurso", readonly=True, index=True)
+    resource_id = fields.Many2oneReference(
+        string="ID del recurso", model_field="resource_model", readonly=True,
+    )
+    resource_name = fields.Char(string="Recurso", readonly=True)
     previous_scope = fields.Selection([
         ("implementation", "Implementación"),
         ("support", "Soporte"),
@@ -24,7 +31,7 @@ class ImplementationHubPublicationLog(models.Model):
         ("implementation", "Implementación"),
         ("support", "Soporte"),
     ], string="Nuevo alcance", readonly=True)
-    published = fields.Boolean(string="Publicado después del cambio", readonly=True)
+    published = fields.Boolean(string="Proyecto publicado después del cambio", readonly=True)
     changed_by = fields.Many2one(
         "res.users", string="Realizado por", required=True,
         readonly=True, default=lambda self: self.env.user,
