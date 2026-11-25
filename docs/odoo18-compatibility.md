@@ -37,3 +37,8 @@ Repositorio oficial: https://github.com/odoo/odoo/tree/18.0
 ## Límite de verificación Enterprise
 
 La rama pública `odoo/odoo:18.0` confirma APIs y componentes generales de Odoo 18. No demuestra que Helpdesk, Documents u otras aplicaciones Enterprise estén instaladas en la base CJG, ni revela personalizaciones o reglas locales. Esos puntos solo se validan con el inventario real de la instancia destino.
+
+
+## Validación pendiente de Enterprise
+
+La documentación pública de Odoo 18 y el repositorio público `odoo/odoo` permiten verificar la estructura base de Proyecto, Portal, Mail, OWL, activos, controladores y seguridad. No se dispone en esta sesión de acceso al repositorio privado `odoo/enterprise` ni a la base de datos CJG. Por eso no se afirma compatibilidad probada de Helpdesk, Documents ni otras personalizaciones Enterprise. La documentación oficial de Odoo explica que Community y Enterprise se obtienen desde repositorios separados y ambos deben corresponder a la rama 18.0: https://www.odoo.com/documentation/18.0/administration/on_premise/source.html.
