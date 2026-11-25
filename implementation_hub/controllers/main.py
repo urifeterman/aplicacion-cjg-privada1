@@ -117,7 +117,9 @@ class ImplementationHubController(http.Controller):
         ], order="date desc, id desc")
 
         progress = project._implementation_hub_progress()
-        status = project.last_update_status or "to_define"
+        # Never derive a public status from project.last_update_status: that field
+        # can reflect an update which the team has not published to this customer.
+        status = updates[0].status if updates else "to_define"
         today = fields.Date.context_today(project)
         delayed = bool(project.date and project.date < today and status != "done")
 
@@ -135,6 +137,7 @@ class ImplementationHubController(http.Controller):
             "deadline": fields.Date.to_string(milestone.deadline) if milestone.deadline else None,
             "reached": bool(milestone.is_reached),
             "reached_date": fields.Date.to_string(milestone.reached_date) if milestone.reached_date else None,
+            "updated_at": fields.Datetime.to_string(milestone.write_date) if milestone.write_date else None,
         } for milestone in milestones]
 
         update_data = [{
@@ -142,6 +145,7 @@ class ImplementationHubController(http.Controller):
             "status": update.status,
             "status_label": self.STATUS_LABELS.get(update.status, update.status),
             "date": fields.Date.to_string(update.date) if update.date else None,
+            "updated_at": fields.Datetime.to_string(update.write_date) if update.write_date else None,
         } for update in updates]
 
         timeline = []
@@ -169,6 +173,16 @@ class ImplementationHubController(http.Controller):
             })
         timeline.sort(key=lambda item: item["date"] or "", reverse=True)
 
+        last_updated_candidates = [
+            item["updated_at"] for item in task_data + milestone_data + update_data
+            if item.get("updated_at")
+        ]
+        last_updated_candidates.extend(
+            item["date"] for item in timeline
+            if item["kind"] == "comment" and item.get("date")
+        )
+        last_updated = max(last_updated_candidates, default=None)
+
         now = fields.Datetime.now()
         next_task = next((
             task for task in tasks
@@ -188,7 +202,7 @@ class ImplementationHubController(http.Controller):
             "start_date": fields.Date.to_string(project.date_start) if project.date_start else None,
             "end_date": fields.Date.to_string(project.date) if project.date else None,
             "delayed": delayed,
-            "last_updated": fields.Datetime.to_string(project.write_date) if project.write_date else None,
+            "last_updated": last_updated,
             "next_activity": {
                 "title": next_task.name,
                 "deadline": fields.Datetime.to_string(next_task.date_deadline),
