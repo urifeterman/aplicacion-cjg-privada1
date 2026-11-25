@@ -157,7 +157,7 @@ def main():
                 "model": rule.model_id.model,
                 "name": rule.name,
                 "groups": rule.groups.mapped("display_name"),
-                "global": rule.global,
+                "global": getattr(rule, "global"),
                 "active": rule.active,
                 "perm_read": rule.perm_read,
                 "perm_write": rule.perm_write,
