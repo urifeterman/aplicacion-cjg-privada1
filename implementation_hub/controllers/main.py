@@ -61,9 +61,14 @@ class ImplementationHubController(http.Controller):
         website=True, sitemap=False,
     )
     def home(self, **kwargs):
+        if request.httprequest.path == "/implementation-hub":
+            return request.redirect("/implementation-hub/")
         if not self._is_portal_user():
             return request.not_found()
-        return request.render("implementation_hub.portal_app", {})
+        response = request.render("implementation_hub.portal_app", {})
+        response.headers["Cache-Control"] = "private, no-store"
+        response.headers["Pragma"] = "no-cache"
+        return response
 
     @http.route(
         "/implementation-hub/data",
