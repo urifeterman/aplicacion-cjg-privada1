@@ -46,3 +46,37 @@ class TestImplementationHubPublication(TransactionCase):
         result = project._implementation_hub_progress()
         self.assertIsNone(result["value"])
         self.assertEqual(result["reason"], "no_published_records")
+
+    def test_project_publication_is_logged(self):
+        project = self.env["project.project"].create({
+            "name": "Hub project publication history",
+            "implementation_hub_scope": "implementation",
+            "implementation_hub_progress_mode": "tasks",
+            "implementation_hub_published": True,
+        })
+        log = self.env["implementation.hub.publication.log"].search([
+            ("project_id", "=", project.id),
+            ("action", "=", "publish"),
+            ("resource_model", "=", "project.project"),
+            ("resource_id", "=", project.id),
+        ], limit=1)
+        self.assertTrue(log)
+
+    def test_task_visibility_is_logged(self):
+        project = self.env["project.project"].create({
+            "name": "Hub task publication history",
+            "implementation_hub_scope": "implementation",
+            "implementation_hub_progress_mode": "tasks",
+        })
+        task = self.env["project.task"].create({
+            "name": "Hub visible task",
+            "project_id": project.id,
+        })
+        task.write({"implementation_hub_visible": True})
+        log = self.env["implementation.hub.publication.log"].search([
+            ("project_id", "=", project.id),
+            ("action", "=", "publish_resource"),
+            ("resource_model", "=", "project.task"),
+            ("resource_id", "=", task.id),
+        ], limit=1)
+        self.assertTrue(log)
