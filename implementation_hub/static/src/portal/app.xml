@@ -59,17 +59,20 @@
                                 <p class="text-muted mb-0">Indicadores de las implementaciones publicadas para tu empresa.</p>
                             </div>
                             <div class="row g-3 mb-4">
-                                <div class="col-6 col-xl-3"><div class="card o_ih_metric"><div class="card-body">
+                                <div class="col-6 col-xl"><div class="card o_ih_metric"><div class="card-body">
                                     <div class="text-muted small">Publicadas</div><div class="display-6 fw-semibold" t-esc="summary.total"/>
                                 </div></div></div>
-                                <div class="col-6 col-xl-3"><div class="card o_ih_metric"><div class="card-body">
+                                <div class="col-6 col-xl"><div class="card o_ih_metric"><div class="card-body">
                                     <div class="text-muted small">En curso</div><div class="display-6 fw-semibold" t-esc="summary.active"/>
                                 </div></div></div>
-                                <div class="col-6 col-xl-3"><div class="card o_ih_metric"><div class="card-body">
+                                <div class="col-6 col-xl"><div class="card o_ih_metric"><div class="card-body">
                                     <div class="text-muted small">Finalizadas</div><div class="display-6 fw-semibold" t-esc="summary.done"/>
                                 </div></div></div>
-                                <div class="col-6 col-xl-3"><div class="card o_ih_metric"><div class="card-body">
-                                    <div class="text-muted small">Fecha vencida</div><div class="display-6 fw-semibold" t-esc="summary.delayed"/>
+                                <div class="col-6 col-xl"><div class="card o_ih_metric"><div class="card-body">
+                                    <div class="text-muted small">Sin actualización pública</div><div class="display-6 fw-semibold" t-esc="summary.pending"/>
+                                </div></div></div>
+                                <div class="col-6 col-xl"><div class="card o_ih_metric"><div class="card-body">
+                                    <div class="text-muted small">Retrasos confirmados</div><div class="display-6 fw-semibold" t-esc="summary.delayed"/>
                                 </div></div></div>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-3">
