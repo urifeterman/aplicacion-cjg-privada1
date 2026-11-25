@@ -89,3 +89,6 @@ El workflow `.github/workflows/static-validation.yml` comprueba compilación sin
 
 La integración con estas aplicaciones se debe implementar como extensión opcional después de confirmar que están instaladas y auditar sus ACL/reglas en la base CJG.
 
+## Auditoría de la base destino
+
+Antes de instalar en staging, ejecutar el inventario de solo lectura disponible en scripts/audit_odoo18.py. Las instrucciones están en scripts/README.md. El script permite confirmar el estado de Helpdesk/Documents, campos personalizados y reglas/ACL reales sin extraer nombres ni contenidos de clientes.
