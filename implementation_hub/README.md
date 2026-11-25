@@ -97,3 +97,11 @@ Antes de instalar en staging, ejecutar el inventario de solo lectura disponible 
 ## Estado y retrasos publicados
 
 El estado público se toma de la actualización de proyecto más reciente que el equipo marcó explícitamente como visible. No se usa `project.last_update_status`, porque puede reflejar una actualización no publicada. La alerta de retraso solo se muestra cuando existe fecha final planificada vencida y hay una actualización pública que no marca el proyecto como terminado. Sin estado público no se infiere un retraso.
+
+
+## Decisión pendiente: estado de tarea y fórmula de avance
+
+La propuesta del PDF habla de tareas en la “etapa final”. En Odoo 18, el campo `project.task.state` distingue estados operativos, incluidos `1_done` (Done) y `1_canceled` (Cancelled); `project.task.type.fold` significa que la etapa se pliega en la vista Kanban y no equivale por sí solo a una etapa final. Por eso el código usa `1_done` como numerador y excluye canceladas. El dueño funcional debe confirmar que esta interpretación corresponde al flujo CJG.
+
+Además, tanto numerador como denominador cuentan solo elementos publicados. Esto evita revelar por porcentaje la cantidad de tareas/hitos internos ocultos, pero puede diferir de la fórmula de total de registros del borrador. Requiere aprobación funcional antes de producción.
+
