@@ -110,3 +110,5 @@ El workflow de validación estática se añadió al repositorio, pero desde esta
 - Notificaciones push quedan fuera de esta fase según el alcance original.
 - El avance usa exclusivamente elementos publicados como numerador y denominador. Es una elección conservadora para no revelar la cantidad/estado de elementos ocultos; requiere aprobación funcional frente a la fórmula propuesta en el PDF.
 
+- Se añadió scripts/audit_odoo18.py, un inventario de solo lectura para identificar módulos, modelos, campos, ACL, reglas y disponibilidad de Helpdesk/Documents en la base destino.
+- Pendiente: ejecutar ese script contra la base CJG Enterprise real y revisar su JSON de salida.
