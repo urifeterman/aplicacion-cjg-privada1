@@ -106,6 +106,7 @@
                                         <div class="d-flex flex-wrap gap-3 small text-muted mt-3">
                                             <span t-if="project.start_date"><i class="fa fa-calendar me-1"/>Inicio: <t t-esc="project.start_date"/></span>
                                             <span t-if="project.end_date"><i class="fa fa-flag-checkered me-1"/>Fin: <t t-esc="project.end_date"/></span>
+                                            <span t-if="project.last_updated"><i class="fa fa-clock-o me-1"/>Actualizado: <t t-esc="project.last_updated"/></span>
                                         </div>
                                         <button class="btn btn-outline-primary mt-3" t-on-click="() => this.openProject(project.id)">Ver detalle</button>
                                     </div>
@@ -162,6 +163,9 @@
                                         <t t-esc="selectedProject.progress.done"/> / <t t-esc="selectedProject.progress.total"/>
                                         <t t-if="selectedProject.progress.basis === 'milestones'"> hitos completados</t>
                                         <t t-else=""> tareas finalizadas</t>
+                                    </div>
+                                    <div class="small text-muted mt-3" t-if="selectedProject.last_updated">
+                                        Última actualización publicada: <t t-esc="selectedProject.last_updated"/>
                                     </div>
                                     <div class="row mt-3">
                                         <div class="col-6"><span class="small text-muted d-block">Inicio</span><strong t-esc="selectedProject.start_date || 'Sin fecha planificada'"/></div>
