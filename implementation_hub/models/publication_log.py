@@ -15,6 +15,7 @@ class ImplementationHubPublicationLog(models.Model):
         ("publish", "Proyecto publicado"),
         ("unpublish", "Proyecto despublicado"),
         ("scope_change", "Cambio de alcance"),
+        ("progress_mode_change", "Cambio de regla de avance"),
         ("publish_resource", "Recurso publicado"),
         ("unpublish_resource", "Recurso despublicado"),
     ], string="Acción", required=True, readonly=True)
@@ -31,6 +32,14 @@ class ImplementationHubPublicationLog(models.Model):
         ("implementation", "Implementación"),
         ("support", "Soporte"),
     ], string="Nuevo alcance", readonly=True)
+    previous_progress_mode = fields.Selection([
+        ("milestones", "Hitos publicados"),
+        ("tasks", "Tareas publicadas"),
+    ], string="Regla de avance anterior", readonly=True)
+    new_progress_mode = fields.Selection([
+        ("milestones", "Hitos publicados"),
+        ("tasks", "Tareas publicadas"),
+    ], string="Nueva regla de avance", readonly=True)
     published = fields.Boolean(string="Proyecto publicado después del cambio", readonly=True)
     changed_by = fields.Many2one(
         "res.users", string="Realizado por", required=True,
