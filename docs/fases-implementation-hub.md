@@ -112,3 +112,11 @@ El workflow de GitHub Actions de validación estática completó con resultado `
 
 - Se añadió scripts/audit_odoo18.py, un inventario de solo lectura para identificar módulos, modelos, campos, ACL, reglas y disponibilidad de Helpdesk/Documents en la base destino.
 - Pendiente: ejecutar ese script contra la base CJG Enterprise real y revisar su JSON de salida.
+
+
+## Decisión sobre cálculo del avance que requiere aprobación
+
+El PDF usa la expresión “tareas en etapa final”. El código Odoo 18 confirma los estados terminales `1_done` (Done) y `1_canceled` (Cancelled), mientras que `project.task.type.fold` solo describe el plegado Kanban. La implementación cuenta `1_done` y no cuenta `1_canceled`; no usa `fold=True` como señal de finalización. Esta interpretación debe confirmarse con el flujo CJG.
+
+La implementación también calcula sobre elementos visibles/publicados, tanto en numerador como en denominador, para no filtrar el volumen de trabajo interno. El borrador original plantea el total de hitos/tareas del proyecto; la diferencia debe ser aprobada antes de cerrar la fase 3.
+
