@@ -107,6 +107,8 @@
                 <field name="resource_name"/>
                 <field name="previous_scope"/>
                 <field name="new_scope"/>
+                <field name="previous_progress_mode"/>
+                <field name="new_progress_mode"/>
                 <field name="published"/>
                 <field name="changed_by"/>
             </list>
