@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Odoo 18 core has no portal read ACL for project.update.
+        Grant read-only access only to updates explicitly published on a project
+        assigned to the user's commercial partner, or to a named collaborator.
+    -->
+    <record id="project_update_rule_portal_hub" model="ir.rule">
+        <field name="name">Implementation Hub: published updates for related portal users</field>
+        <field name="model_id" ref="project.model_project_update"/>
+        <field name="domain_force">
+            [
+                ('implementation_hub_visible', '=', True),
+                ('project_id.implementation_hub_published', '=', True),
+                ('project_id.partner_id', '!=', False),
+                '|',
+                    ('project_id.partner_id.commercial_partner_id', '=', user.partner_id.commercial_partner_id.id),
+                    ('project_id.collaborator_ids.partner_id', '=', user.partner_id.id)
+            ]
+        </field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Additional narrow Portal rules implement the Hub's explicit publication
+         and same-commercial-company relationship without changing internal-user rules. -->
+    <record id="project_project_rule_portal_hub" model="ir.rule">
+        <field name="name">Implementation Hub: published projects for customer company</field>
+        <field name="model_id" ref="project.model_project_project"/>
+        <field name="domain_force">
+            [
+                ('implementation_hub_published', '=', True),
+                ('partner_id', '!=', False),
+                ('privacy_visibility', '=', 'portal'),
+                ('partner_id.commercial_partner_id', '=', user.partner_id.commercial_partner_id.id)
+            ]
+        </field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="project_task_rule_portal_hub" model="ir.rule">
+        <field name="name">Implementation Hub: published tasks for customer company</field>
+        <field name="model_id" ref="project.model_project_task"/>
+        <field name="domain_force">
+            [
+                ('implementation_hub_visible', '=', True),
+                ('active', '=', True),
+                ('project_id.implementation_hub_published', '=', True),
+                ('project_id.partner_id.commercial_partner_id', '=', user.partner_id.commercial_partner_id.id),
+                ('project_id.privacy_visibility', '=', 'portal')
+            ]
+        </field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="project_milestone_rule_portal_hub" model="ir.rule">
+        <field name="name">Implementation Hub: published milestones for customer company</field>
+        <field name="model_id" ref="project.model_project_milestone"/>
+        <field name="domain_force">
+            [
+                ('implementation_hub_visible', '=', True),
+                ('project_id.implementation_hub_published', '=', True),
+                ('project_id.partner_id.commercial_partner_id', '=', user.partner_id.commercial_partner_id.id),
+                ('project_id.privacy_visibility', '=', 'portal')
+            ]
+        </field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>
