@@ -92,3 +92,8 @@ La integración con estas aplicaciones se debe implementar como extensión opcio
 ## Auditoría de la base destino
 
 Antes de instalar en staging, ejecutar el inventario de solo lectura disponible en scripts/audit_odoo18.py. Las instrucciones están en scripts/README.md. El script permite confirmar el estado de Helpdesk/Documents, campos personalizados y reglas/ACL reales sin extraer nombres ni contenidos de clientes.
+
+
+## Estado y retrasos publicados
+
+El estado público se toma de la actualización de proyecto más reciente que el equipo marcó explícitamente como visible. No se usa `project.last_update_status`, porque puede reflejar una actualización no publicada. La alerta de retraso solo se muestra cuando existe fecha final planificada vencida y hay una actualización pública que no marca el proyecto como terminado. Sin estado público no se infiere un retraso.
