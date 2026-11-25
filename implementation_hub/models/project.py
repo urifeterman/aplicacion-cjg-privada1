@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 
 
 class ProjectProject(models.Model):
@@ -20,6 +20,17 @@ class ProjectProject(models.Model):
         help="Debe elegirse expresamente por proyecto. No se aplica una regla por defecto.",
     )
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        protected = {
+            "implementation_hub_published",
+            "implementation_hub_scope",
+            "implementation_hub_progress_mode",
+        }
+        if any(protected.intersection(vals) for vals in vals_list) and not self.env.user.has_group("project.group_project_manager"):
+            raise AccessError(_("Solo un administrador de Proyectos puede configurar Implementation Hub."))
+        return super().create(vals_list)
+
     @api.constrains(
         "implementation_hub_published",
         "implementation_hub_scope",
@@ -34,6 +45,13 @@ class ProjectProject(models.Model):
                     raise ValidationError(_("Selecciona una regla de avance antes de publicar."))
 
     def write(self, vals):
+        protected = {
+            "implementation_hub_published",
+            "implementation_hub_scope",
+            "implementation_hub_progress_mode",
+        }
+        if protected.intersection(vals) and not self.env.user.has_group("project.group_project_manager"):
+            raise AccessError(_("Solo un administrador de Proyectos puede configurar Implementation Hub."))
         tracked = {"implementation_hub_published", "implementation_hub_scope"}
         previous = {}
         if tracked.intersection(vals):
