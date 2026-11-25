@@ -102,6 +102,8 @@
                 <field name="changed_at"/>
                 <field name="project_id"/>
                 <field name="action"/>
+                <field name="resource_model"/>
+                <field name="resource_name"/>
                 <field name="previous_scope"/>
                 <field name="new_scope"/>
                 <field name="published"/>
