@@ -29,7 +29,22 @@ class ProjectProject(models.Model):
         }
         if any(protected.intersection(vals) for vals in vals_list) and not self.env.user.has_group("project.group_project_manager"):
             raise AccessError(_("Solo un administrador de Proyectos puede configurar Implementation Hub."))
-        return super().create(vals_list)
+        projects = super().create(vals_list)
+        log_values = []
+        for project in projects.filtered("implementation_hub_published"):
+            log_values.append({
+                "project_id": project.id,
+                "action": "publish",
+                "resource_model": "project.project",
+                "resource_id": project.id,
+                "resource_name": project.display_name,
+                "new_scope": project.implementation_hub_scope,
+                "published": True,
+                "changed_by": self.env.user.id,
+            })
+        if log_values:
+            self.env["implementation.hub.publication.log"].create(log_values)
+        return projects
 
     @api.constrains(
         "implementation_hub_published",
@@ -74,6 +89,9 @@ class ProjectProject(models.Model):
                 values.append({
                     "project_id": rec.id,
                     "action": action,
+                    "resource_model": "project.project",
+                    "resource_id": rec.id,
+                    "resource_name": rec.display_name,
                     "previous_scope": old_scope,
                     "new_scope": new_scope,
                     "published": new_published,
@@ -82,6 +100,19 @@ class ProjectProject(models.Model):
             if values:
                 self.env["implementation.hub.publication.log"].create(values)
         return result
+
+    def _implementation_hub_log_resource(self, model_name, record_id, resource_name, published):
+        """Record a visibility change for a project resource in the single Hub log model."""
+        for project in self:
+            self.env["implementation.hub.publication.log"].create({
+                "project_id": project.id,
+                "action": "publish_resource" if published else "unpublish_resource",
+                "resource_model": model_name,
+                "resource_id": record_id,
+                "resource_name": resource_name,
+                "published": project.implementation_hub_published,
+                "changed_by": self.env.user.id,
+            })
 
     def _implementation_hub_progress(self):
         self.ensure_one()
