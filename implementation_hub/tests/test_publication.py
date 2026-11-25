@@ -80,3 +80,18 @@ class TestImplementationHubPublication(TransactionCase):
             ("resource_id", "=", task.id),
         ], limit=1)
         self.assertTrue(log)
+
+    def test_progress_mode_change_is_logged(self):
+        project = self.env["project.project"].create({
+            "name": "Hub progress method history",
+            "implementation_hub_scope": "implementation",
+            "implementation_hub_progress_mode": "tasks",
+            "implementation_hub_published": True,
+        })
+        project.write({"implementation_hub_progress_mode": "milestones"})
+        log = self.env["implementation.hub.publication.log"].search([
+            ("project_id", "=", project.id),
+            ("action", "=", "progress_mode_change"),
+        ], limit=1)
+        self.assertEqual(log.previous_progress_mode, "tasks")
+        self.assertEqual(log.new_progress_mode, "milestones")
