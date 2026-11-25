@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_app" name="Implementation Hub Portal">
+        <t t-call="portal.portal_layout">
+            <t t-set="title">Implementation Hub</t>
+            <t t-set="head">
+                <link rel="manifest" href="/implementation-hub/manifest.webmanifest"/>
+                <meta name="theme-color" content="#172554"/>
+            </t>
+            <div class="container-fluid py-4 o_implementation_hub">
+                <owl-component name="implementation_hub.PortalApp"/>
+            </div>
+        </t>
+    </template>
+</odoo>
