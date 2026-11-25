@@ -80,3 +80,12 @@ Se incluye manifest, icono SVG, registro de Service Worker y una página genéri
 ## Validación automática
 
 El workflow `.github/workflows/static-validation.yml` comprueba compilación sintáctica de Python, parseo del manifest, XML, CSV y sintaxis JavaScript. Es una validación estática del repositorio; no sustituye la instalación o pruebas dentro de Odoo 18 Enterprise.
+
+
+## Integraciones Enterprise a validar
+
+- **Helpdesk 18:** La documentación oficial indica que los usuarios Portal solo pueden consultar tickets que siguen cuando el equipo tiene la visibilidad “Usuarios del portal invitados y todos los usuarios internos”. El Hub no amplía esos permisos ni consulta tickets todavía; la integración debe conservar esos controles por equipo/ticket y la autorización nativa. Referencia: https://www.odoo.com/documentation/18.0/applications/services/helpdesk.html
+- **Documents 18:** La aplicación administra permisos de carpetas y documentos de forma independiente, y los usuarios Portal acceden a elementos con permiso de lectura o edición. El módulo actual no integra ese modelo; solo lista adjuntos directamente vinculados a registros de Proyecto y marcados para publicación. Referencia: https://www.odoo.com/documentation/18.0/applications/productivity/documents.html
+
+La integración con estas aplicaciones se debe implementar como extensión opcional después de confirmar que están instaladas y auditar sus ACL/reglas en la base CJG.
+
