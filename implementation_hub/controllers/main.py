@@ -121,7 +121,9 @@ class ImplementationHubController(http.Controller):
         # can reflect an update which the team has not published to this customer.
         status = updates[0].status if updates else "to_define"
         today = fields.Date.context_today(project)
-        delayed = bool(project.date and project.date < today and status != "done")
+        # A delay is not asserted until an explicit public status exists; otherwise
+        # the Hub cannot safely infer whether the project was completed privately.
+        delayed = bool(project.date and project.date < today and updates and status != "done")
 
         task_data = [{
             "title": task.name,
