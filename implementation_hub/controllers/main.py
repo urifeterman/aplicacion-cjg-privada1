@@ -238,16 +238,16 @@ class ImplementationHubController(http.Controller):
             return []
         try:
             # Narrow sudo is required because Odoo's base ir.attachment ACL intentionally
-        # denies direct Portal searches. Every parent resource in these domains was
-        # already selected under the current Portal user's ACLs and record rules.
-        attachments = request.env["ir.attachment"].sudo().search(
-            OR(domains) + [
-                ("implementation_hub_visible", "=", True),
-                ("type", "=", "binary"),
-            ],
-            order="name asc",
-            limit=100,
-        )
+            # denies direct Portal searches. Every parent resource in these domains was
+            # already selected under the current Portal user's ACLs and record rules.
+            attachments = request.env["ir.attachment"].sudo().search(
+                OR(domains) + [
+                    ("implementation_hub_visible", "=", True),
+                    ("type", "=", "binary"),
+                ],
+                order="name asc",
+                limit=100,
+            )
         except AccessError:
             return []
         return [{
