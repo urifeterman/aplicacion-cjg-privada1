@@ -81,6 +81,10 @@ class ImplementationHubController(http.Controller):
 
         projects = self._portal_projects()
         project_data = [self._project_payload(project) for project in projects]
+        for item in project_data:
+            # Keep the internal classification out of the client-facing whitelist.
+            item.pop("status_key", None)
+
         payload = {
             "profile": {
                 "name": request.env.user.partner_id.name or "",
@@ -89,9 +93,9 @@ class ImplementationHubController(http.Controller):
             },
             "summary": {
                 "total": len(project_data),
-                "active": sum(item["status"] in {"on_track", "at_risk", "off_track", "on_hold"} for item in project_data),
-                "done": sum(item["status"] == "done" for item in project_data),
-                "pending": sum(item["status"] == "to_define" for item in project_data),
+                "active": sum(item["status_key"] in {"on_track", "at_risk", "off_track", "on_hold"} for item in project_data),
+                "done": sum(item["status_key"] == "done" for item in project_data),
+                "pending": sum(item["status_key"] == "to_define" for item in project_data),
                 "delayed": sum(item["delayed"] for item in project_data),
             },
             "projects": project_data,
@@ -195,7 +199,8 @@ class ImplementationHubController(http.Controller):
             "scope_label": dict(project._fields["implementation_hub_scope"].selection).get(
                 project.implementation_hub_scope, ""
             ),
-            "status_label": self.STATUS_LABELS.get(status, status),
+            "status_key": status,
+            "status_label": self.STATUS_LABELS.get(status, "Estado no definido"),
             "progress": progress,
             "start_date": fields.Date.to_string(project.date_start) if project.date_start else None,
             "end_date": fields.Date.to_string(project.date) if project.date else None,
