@@ -62,7 +62,10 @@
                 ('project_id.privacy_visibility', '=', 'portal'),
                 '|',
                     ('project_id.partner_id.commercial_partner_id', '=', user.partner_id.commercial_partner_id.id),
-                    ('project_id.collaborator_ids.partner_id', '=', user.partner_id.id)
+                    ('project_id.collaborator_ids', 'any', [
+                        ('partner_id', '=', user.partner_id.id),
+                        ('limited_access', '=', False)
+                    ])
             ]
         </field>
         <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
