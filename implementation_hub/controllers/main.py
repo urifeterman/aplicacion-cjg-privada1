@@ -89,8 +89,9 @@ class ImplementationHubController(http.Controller):
             },
             "summary": {
                 "total": len(project_data),
-                "active": sum(item["status"] != "done" for item in project_data),
+                "active": sum(item["status"] in {"on_track", "at_risk", "off_track", "on_hold"} for item in project_data),
                 "done": sum(item["status"] == "done" for item in project_data),
+                "pending": sum(item["status"] == "to_define" for item in project_data),
                 "delayed": sum(item["delayed"] for item in project_data),
             },
             "projects": project_data,
@@ -127,9 +128,7 @@ class ImplementationHubController(http.Controller):
 
         task_data = [{
             "title": task.name,
-            "stage": task.stage_id.display_name or "",
-            "state": task.state,
-            "state_label": self.TASK_STATE_LABELS.get(task.state, "En progreso"),
+            "state_label": self.TASK_STATE_LABELS.get(task.state, "Estado no definido"),
             "deadline": fields.Datetime.to_string(task.date_deadline) if task.date_deadline else None,
             "updated_at": fields.Datetime.to_string(task.write_date) if task.write_date else None,
         } for task in tasks]
@@ -144,8 +143,7 @@ class ImplementationHubController(http.Controller):
 
         update_data = [{
             "title": update.name,
-            "status": update.status,
-            "status_label": self.STATUS_LABELS.get(update.status, update.status),
+            "status_label": self.STATUS_LABELS.get(update.status, "Estado no definido"),
             "date": fields.Date.to_string(update.date) if update.date else None,
             "updated_at": fields.Datetime.to_string(update.write_date) if update.write_date else None,
         } for update in updates]
@@ -194,11 +192,9 @@ class ImplementationHubController(http.Controller):
         return {
             "id": project.id,
             "name": project.name,
-            "scope": project.implementation_hub_scope,
             "scope_label": dict(project._fields["implementation_hub_scope"].selection).get(
                 project.implementation_hub_scope, ""
             ),
-            "status": status,
             "status_label": self.STATUS_LABELS.get(status, status),
             "progress": progress,
             "start_date": fields.Date.to_string(project.date_start) if project.date_start else None,
@@ -239,7 +235,7 @@ class ImplementationHubController(http.Controller):
         except AccessError:
             return []
         return [{
-            "author": message.author_id.name or message.email_from or "Equipo",
+            "author": message.author_id.name or "Equipo",
             "date": fields.Datetime.to_string(message.date) if message.date else None,
             "preview": message.preview or "",
         } for message in messages]
