@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="implementation_hub.PortalApp">
+        <div class="o_ih_shell">
+            <header class="o_ih_header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                <div>
+                    <div class="text-uppercase small fw-semibold text-primary mb-1">Portal de clientes</div>
+                    <h1 class="h2 mb-1">Implementation Hub</h1>
+                    <p class="text-muted mb-0">El estado de tu implementación, consultado directamente en Odoo.</p>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-outline-secondary" t-on-click="loadData" t-att-disabled="state.loading">
+                        <i class="fa fa-refresh me-1"/> Actualizar
+                    </button>
+                    <a class="btn btn-outline-secondary" href="/web/session/logout?redirect=%2Fweb%2Flogin">Cerrar sesión</a>
+                </div>
+            </header>
+
+            <t t-if="state.loading">
+                <div class="py-5 text-center text-muted">
+                    <span class="spinner-border spinner-border-sm me-2" role="status"/>
+                    Consultando información autorizada en Odoo...
+                </div>
+            </t>
+            <t t-elif="state.error">
+                <div class="alert alert-warning" role="alert">
+                    No se pudo consultar la información. Verifica tu conexión e inicia sesión de nuevo si es necesario.
+                </div>
+            </t>
+            <t t-else="">
+                <div class="o_ih_layout">
+                    <nav class="o_ih_sidebar card border-0 shadow-sm" aria-label="Navegación principal">
+                        <div class="card-body p-2">
+                            <button class="o_ih_nav_item" t-att-class="state.section === 'dashboard' ? 'active' : ''" t-on-click="() => this.navigate('dashboard')">
+                                <i class="fa fa-home"/> <span>Resumen</span>
+                            </button>
+                            <button class="o_ih_nav_item" t-att-class="state.section === 'implementations' || state.section === 'detail' ? 'active' : ''" t-on-click="() => this.navigate('implementations')">
+                                <i class="fa fa-cubes"/> <span>Mis implementaciones</span>
+                            </button>
+                            <button class="o_ih_nav_item" t-att-class="state.section === 'schedule' ? 'active' : ''" t-on-click="() => this.navigate('schedule')">
+                                <i class="fa fa-calendar"/> <span>Cronograma</span>
+                            </button>
+                            <button class="o_ih_nav_item" t-att-class="state.section === 'documents' ? 'active' : ''" t-on-click="() => this.navigate('documents')">
+                                <i class="fa fa-folder-open"/> <span>Documentos</span>
+                            </button>
+                            <button class="o_ih_nav_item" t-att-class="state.section === 'tickets' ? 'active' : ''" t-on-click="() => this.navigate('tickets')">
+                                <i class="fa fa-life-ring"/> <span>Tickets</span>
+                            </button>
+                            <button class="o_ih_nav_item" t-att-class="state.section === 'profile' ? 'active' : ''" t-on-click="() => this.navigate('profile')">
+                                <i class="fa fa-user"/> <span>Perfil</span>
+                            </button>
+                        </div>
+                    </nav>
+
+                    <main class="o_ih_main">
+                        <t t-if="state.section === 'dashboard'">
+                            <div class="mb-3">
+                                <h2 class="h4 mb-1">Resumen general</h2>
+                                <p class="text-muted mb-0">Indicadores de las implementaciones publicadas para tu empresa.</p>
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-6 col-xl-3"><div class="card o_ih_metric"><div class="card-body">
+                                    <div class="text-muted small">Publicadas</div><div class="display-6 fw-semibold" t-esc="summary.total"/>
+                                </div></div></div>
+                                <div class="col-6 col-xl-3"><div class="card o_ih_metric"><div class="card-body">
+                                    <div class="text-muted small">En curso</div><div class="display-6 fw-semibold" t-esc="summary.active"/>
+                                </div></div></div>
+                                <div class="col-6 col-xl-3"><div class="card o_ih_metric"><div class="card-body">
+                                    <div class="text-muted small">Finalizadas</div><div class="display-6 fw-semibold" t-esc="summary.done"/>
+                                </div></div></div>
+                                <div class="col-6 col-xl-3"><div class="card o_ih_metric"><div class="card-body">
+                                    <div class="text-muted small">Fecha vencida</div><div class="display-6 fw-semibold" t-esc="summary.delayed"/>
+                                </div></div></div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h3 class="h5 mb-0">Implementaciones recientes</h3>
+                                <button class="btn btn-link" t-on-click="() => this.navigate('implementations')">Ver todas</button>
+                            </div>
+                            <t t-if="!projects.length">
+                                <div class="card border-0 shadow-sm"><div class="card-body py-5 text-center">
+                                    <i class="fa fa-folder-open-o fa-2x text-muted mb-3"/>
+                                    <h3 class="h5">No hay implementaciones publicadas</h3>
+                                    <p class="text-muted mb-0">Cuando el equipo publique un proyecto autorizado, aparecerá aquí.</p>
+                                </div></div>
+                            </t>
+                            <t t-foreach="projects.slice(0, 3)" t-as="project" t-key="project.id">
+                                <article class="card o_ih_project_card mb-3">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex flex-wrap justify-content-between gap-2">
+                                            <div><div class="small text-primary fw-semibold" t-esc="project.scope_label"/>
+                                                <h3 class="h5 mt-1" t-esc="project.name"/>
+                                                <span class="badge text-bg-light" t-esc="project.status_label"/>
+                                            </div>
+                                            <span t-if="project.delayed" class="badge text-bg-warning align-self-start">Fecha planificada vencida</span>
+                                        </div>
+                                        <div class="mt-3">
+                                            <div class="d-flex justify-content-between small mb-2">
+                                                <span class="text-muted">Avance</span>
+                                                <strong t-if="project.progress.value !== null" t-esc="project.progress.value + '%'"/>
+                                                <span t-else="" class="text-muted">No disponible</span>
+                                            </div>
+                                            <div class="progress" role="progressbar" t-att-aria-valuenow="project.progress.value || 0" aria-valuemin="0" aria-valuemax="100">
+                                                <div class="progress-bar" t-att-style="'width: ' + (project.progress.value || 0) + '%'"/>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-wrap gap-3 small text-muted mt-3">
+                                            <span t-if="project.start_date"><i class="fa fa-calendar me-1"/>Inicio: <t t-esc="project.start_date"/></span>
+                                            <span t-if="project.end_date"><i class="fa fa-flag-checkered me-1"/>Fin: <t t-esc="project.end_date"/></span>
+                                        </div>
+                                        <button class="btn btn-outline-primary mt-3" t-on-click="() => this.openProject(project.id)">Ver detalle</button>
+                                    </div>
+                                </article>
+                            </t>
+                        </t>
+
+                        <t t-elif="state.section === 'implementations'">
+                            <h2 class="h4 mb-3">Mis implementaciones</h2>
+                            <t t-if="!projects.length"><div class="alert alert-light">No hay implementaciones publicadas.</div></t>
+                            <t t-foreach="projects" t-as="project" t-key="project.id">
+                                <article class="card o_ih_project_card mb-3"><div class="card-body p-4">
+                                    <div class="d-flex justify-content-between flex-wrap gap-2">
+                                        <div><div class="small text-primary fw-semibold" t-esc="project.scope_label"/><h3 class="h5" t-esc="project.name"/>
+                                            <span class="badge text-bg-light" t-esc="project.status_label"/>
+                                        </div>
+                                        <span t-if="project.delayed" class="badge text-bg-warning">Fecha planificada vencida</span>
+                                    </div>
+                                    <div class="mt-3 d-flex justify-content-between small">
+                                        <span class="text-muted">Avance</span>
+                                        <strong t-if="project.progress.value !== null" t-esc="project.progress.value + '%'"/>
+                                        <span t-else="">No disponible</span>
+                                    </div>
+                                    <div class="progress mt-2"><div class="progress-bar" t-att-style="'width: ' + (project.progress.value || 0) + '%'"/></div>
+                                    <div class="small text-muted mt-2" t-if="project.progress.value !== null">
+                                        <t t-esc="project.progress.done"/> de <t t-esc="project.progress.total"/>
+                                        <t t-if="project.progress.basis === 'milestones'"> hitos completados</t>
+                                        <t t-else=""> tareas terminadas</t>
+                                    </div>
+                                    <button class="btn btn-outline-primary mt-3" t-on-click="() => this.openProject(project.id)">Abrir implementación</button>
+                                </div></article>
+                            </t>
+                        </t>
+
+                        <t t-elif="state.section === 'detail'">
+                            <button class="btn btn-link px-0 mb-2" t-on-click="backToProjects"><i class="fa fa-arrow-left me-1"/>Volver a implementaciones</button>
+                            <t t-if="selectedProject">
+                                <div class="d-flex justify-content-between flex-wrap gap-2">
+                                    <div><div class="small text-primary fw-semibold" t-esc="selectedProject.scope_label"/>
+                                        <h2 class="h3" t-esc="selectedProject.name"/>
+                                        <span class="badge text-bg-light" t-esc="selectedProject.status_label"/>
+                                    </div>
+                                    <span t-if="selectedProject.delayed" class="badge text-bg-warning align-self-start">Fecha planificada vencida</span>
+                                </div>
+                                <section class="card o_ih_project_card mt-3"><div class="card-body p-4">
+                                    <h3 class="h5">Progreso</h3>
+                                    <div class="d-flex justify-content-between small mb-2">
+                                        <span class="text-muted">Avance calculado</span>
+                                        <strong t-if="selectedProject.progress.value !== null" t-esc="selectedProject.progress.value + '%'"/>
+                                        <span t-else="">Sin datos suficientes</span>
+                                    </div>
+                                    <div class="progress"><div class="progress-bar" t-att-style="'width: ' + (selectedProject.progress.value || 0) + '%'"/></div>
+                                    <div class="small text-muted mt-2" t-if="selectedProject.progress.value !== null">
+                                        <t t-esc="selectedProject.progress.done"/> / <t t-esc="selectedProject.progress.total"/>
+                                        <t t-if="selectedProject.progress.basis === 'milestones'"> hitos completados</t>
+                                        <t t-else=""> tareas finalizadas</t>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-6"><span class="small text-muted d-block">Inicio</span><strong t-esc="selectedProject.start_date || 'Sin fecha planificada'"/></div>
+                                        <div class="col-6"><span class="small text-muted d-block">Fin</span><strong t-esc="selectedProject.end_date || 'Sin fecha planificada'"/></div>
+                                    </div>
+                                    <div class="mt-4" t-if="selectedProject.next_activity">
+                                        <span class="small text-muted d-block">Próxima actividad</span>
+                                        <strong t-esc="selectedProject.next_activity.title"/>
+                                        <span class="small text-muted ms-2" t-esc="selectedProject.next_activity.deadline"/>
+                                    </div>
+                                </div></section>
+                                <div class="row g-3 mt-1">
+                                    <div class="col-12 col-lg-6"><section class="card o_ih_project_card h-100"><div class="card-body p-4">
+                                        <h3 class="h5">Hitos publicados</h3>
+                                        <t t-if="!selectedProject.milestones.length"><p class="small text-muted">No hay hitos visibles.</p></t>
+                                        <ul class="small ps-3 mb-0" t-else="">
+                                            <li t-foreach="selectedProject.milestones" t-as="milestone" t-key="milestone.title">
+                                                <strong t-esc="milestone.title"/> — <t t-esc="milestone.reached ? 'Completado' : 'Pendiente'"/>
+                                                <span class="text-muted" t-if="milestone.deadline"> · <t t-esc="milestone.deadline"/></span>
+                                            </li>
+                                        </ul>
+                                    </div></section></div>
+                                    <div class="col-12 col-lg-6"><section class="card o_ih_project_card h-100"><div class="card-body p-4">
+                                        <h3 class="h5">Tareas publicadas</h3>
+                                        <t t-if="!selectedProject.tasks.length"><p class="small text-muted">No hay tareas visibles.</p></t>
+                                        <ul class="small ps-3 mb-0" t-else="">
+                                            <li t-foreach="selectedProject.tasks" t-as="task" t-key="task.title">
+                                                <strong t-esc="task.title"/> — <t t-esc="task.state_label"/>
+                                            </li>
+                                        </ul>
+                                    </div></section></div>
+                                </div>
+                                <section class="card o_ih_project_card mt-3"><div class="card-body p-4">
+                                    <h3 class="h5">Actualizaciones publicadas</h3>
+                                    <t t-if="!selectedProject.updates.length"><p class="small text-muted mb-0">No hay actualizaciones publicadas.</p></t>
+                                    <ul class="list-unstyled small mb-0" t-else="">
+                                        <li t-foreach="selectedProject.updates" t-as="update" t-key="update.title" class="py-2 border-bottom">
+                                            <strong t-esc="update.title"/> · <t t-esc="update.status_label"/> · <span class="text-muted" t-esc="update.date"/>
+                                        </li>
+                                    </ul>
+                                </div></section>
+                                <section class="card o_ih_project_card mt-3"><div class="card-body p-4">
+                                    <h3 class="h5">Línea de tiempo</h3>
+                                    <t t-if="!selectedProject.timeline.length"><p class="small text-muted mb-0">No hay actividades publicadas.</p></t>
+                                    <ul class="list-unstyled border-start ps-3 ms-1 mb-0" t-else="">
+                                        <li t-foreach="selectedProject.timeline" t-as="event" t-key="event.kind + event.title + event.date" class="pb-3">
+                                            <span class="small text-muted d-block" t-esc="event.date || 'Sin fecha'"/>
+                                            <strong t-esc="event.title" class="d-block"/>
+                                            <span class="small text-muted" t-esc="event.status"/>
+                                        </li>
+                                    </ul>
+                                </div></section>
+                            </t>
+                            <t t-else=""><div class="alert alert-warning">No se encontró el detalle solicitado.</div></t>
+                        </t>
+
+                        <t t-elif="state.section === 'schedule'">
+                            <h2 class="h4 mb-3">Cronograma y actividades publicadas</h2>
+                            <t t-if="!schedule.length"><div class="alert alert-light">No hay hitos o actividades publicadas.</div></t>
+                            <section class="card o_ih_project_card"><div class="card-body p-4">
+                                <ul class="list-unstyled mb-0">
+                                    <li t-foreach="schedule" t-as="event" t-key="event.kind + event.title + event.project_name + event.date" class="py-3 border-bottom">
+                                        <div class="small text-muted" t-esc="event.date || 'Sin fecha'"/>
+                                        <strong t-esc="event.title"/>
+                                        <div class="small text-muted"><t t-esc="event.project_name"/> · <t t-esc="event.status"/></div>
+                                    </li>
+                                </ul>
+                            </div></section>
+                        </t>
+
+                        <t t-elif="state.section === 'documents'">
+                            <h2 class="h4 mb-3">Documentos y entregables autorizados</h2>
+                            <t t-if="!documents.length"><div class="alert alert-light">No hay documentos publicados.</div></t>
+                            <section class="card o_ih_project_card"><div class="card-body p-4">
+                                <ul class="list-unstyled mb-0">
+                                    <li t-foreach="documents" t-as="document" t-key="document.id" class="py-2 border-bottom">
+                                        <a t-att-href="document.url"><i class="fa fa-file-o me-2"/> <t t-esc="document.name"/></a>
+                                        <div class="small text-muted" t-esc="document.project_name"/>
+                                    </li>
+                                </ul>
+                            </div></section>
+                        </t>
+
+                        <t t-elif="state.section === 'tickets'">
+                            <h2 class="h4 mb-3">Tickets de soporte</h2>
+                            <div class="alert alert-info">
+                                La integración de Helpdesk queda pendiente de verificar que la aplicación esté instalada en la base Odoo destino y revisar su modelo y permisos reales.
+                            </div>
+                        </t>
+
+                        <t t-elif="state.section === 'profile'">
+                            <h2 class="h4 mb-3">Mi perfil</h2>
+                            <section class="card o_ih_project_card"><div class="card-body p-4">
+                                <div class="small text-muted">Nombre</div><div class="fw-semibold mb-3" t-esc="state.data.profile.name"/>
+                                <div class="small text-muted">Empresa</div><div class="fw-semibold mb-3" t-esc="state.data.profile.company"/>
+                                <div class="small text-muted">Correo</div><div class="fw-semibold" t-esc="state.data.profile.email"/>
+                                <p class="small text-muted mt-4 mb-0">La identidad, los datos de cuenta y el cierre de sesión son administrados por el Portal nativo de Odoo.</p>
+                            </div></section>
+                        </t>
+                    </main>
+                </div>
+                <div class="small text-muted mt-4">Datos consultados directamente en Odoo: <t t-esc="state.data.generated_at"/>.</div>
+            </t>
+        </div>
+    </t>
+</templates>
