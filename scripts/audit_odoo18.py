@@ -100,7 +100,7 @@ def main():
             "name", "partner_id", "team_id", "stage_id", "priority",
             "user_id", "tag_ids", "company_id", "message_partner_ids",
         ],
-        "helpdesk.ticket.team": [
+        "helpdesk.team": [
             "name", "privacy", "company_id",
         ],
         "documents.document": [
