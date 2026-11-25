@@ -59,20 +59,41 @@
             grid-template-columns: minmax(0, 1fr);
         }
 
+        .o_ih_shell {
+            padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+        }
+
         .o_ih_sidebar {
-            position: static;
-            overflow-x: auto;
+            position: fixed;
+            z-index: 1030;
+            left: 0.75rem;
+            right: 0.75rem;
+            bottom: calc(0.5rem + env(safe-area-inset-bottom));
+            overflow: hidden;
 
             .card-body {
                 display: flex;
-                min-width: max-content;
-                gap: 0.25rem;
+                min-width: 0;
+                justify-content: space-around;
+                gap: 0.1rem;
             }
         }
 
         .o_ih_nav_item {
-            width: auto;
+            flex: 1 1 0;
+            width: 0;
+            min-width: 0;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.25rem;
+            padding: 0.5rem 0.2rem;
+            font-size: 0.68rem;
             white-space: nowrap;
+
+            i {
+                width: auto;
+                font-size: 1rem;
+            }
         }
     }
 
