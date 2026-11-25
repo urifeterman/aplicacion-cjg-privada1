@@ -1,0 +1,68 @@
+name: Implementation Hub static validation
+
+on:
+  push:
+    branches:
+      - test
+    paths:
+      - "implementation_hub/**"
+      - ".github/workflows/static-validation.yml"
+  pull_request:
+    branches:
+      - test
+    paths:
+      - "implementation_hub/**"
+      - ".github/workflows/static-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  static-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile Python sources
+        run: python -m compileall -q implementation_hub
+
+      - name: Validate Odoo module manifest
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          manifest = ast.literal_eval(Path("implementation_hub/__manifest__.py").read_text(encoding="utf-8"))
+          required = {"name", "version", "depends", "data", "assets", "installable"}
+          missing = required.difference(manifest)
+          if missing:
+              raise SystemExit(f"Missing manifest keys: {sorted(missing)}")
+          print("Manifest parsed successfully")
+          PY
+
+      - name: Parse XML and CSV data files
+        run: |
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+          from xml.etree import ElementTree
+
+          for path in Path("implementation_hub").rglob("*.xml"):
+              ElementTree.parse(path)
+              print(f"XML OK: {path}")
+
+          for path in Path("implementation_hub").rglob("*.csv"):
+              with path.open(encoding="utf-8", newline="") as stream:
+                  rows = list(csv.reader(stream))
+              if rows and any(len(row) != len(rows[0]) for row in rows[1:]):
+                  raise SystemExit(f"Invalid CSV column count: {path}")
+              print(f"CSV OK: {path}")
+          PY
+
+      - name: Check JavaScript syntax
+        run: node --check implementation_hub/static/src/portal/app.js
