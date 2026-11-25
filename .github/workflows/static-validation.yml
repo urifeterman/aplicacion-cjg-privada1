@@ -6,6 +6,7 @@ on:
       - test
     paths:
       - "implementation_hub/**"
+      - "scripts/**"
       - ".github/workflows/static-validation.yml"
   pull_request:
     branches:
@@ -30,7 +31,7 @@ jobs:
           python-version: "3.12"
 
       - name: Compile Python sources
-        run: python -m compileall -q implementation_hub
+        run: python -m compileall -q implementation_hub scripts
 
       - name: Validate Odoo module manifest
         run: |
