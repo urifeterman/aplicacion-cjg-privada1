@@ -171,6 +171,7 @@ class ImplementationHubController(http.Controller):
         ), None)
 
         return {
+            "id": project.id,
             "name": project.name,
             "scope": project.implementation_hub_scope,
             "scope_label": dict(project._fields["implementation_hub_scope"].selection).get(
@@ -236,14 +237,17 @@ class ImplementationHubController(http.Controller):
         if not domains:
             return []
         try:
-            attachments = request.env["ir.attachment"].search(
-                OR(domains) + [
-                    ("implementation_hub_visible", "=", True),
-                    ("type", "=", "binary"),
-                ],
-                order="name asc",
-                limit=100,
-            )
+            # Narrow sudo is required because Odoo's base ir.attachment ACL intentionally
+        # denies direct Portal searches. Every parent resource in these domains was
+        # already selected under the current Portal user's ACLs and record rules.
+        attachments = request.env["ir.attachment"].sudo().search(
+            OR(domains) + [
+                ("implementation_hub_visible", "=", True),
+                ("type", "=", "binary"),
+            ],
+            order="name asc",
+            limit=100,
+        )
         except AccessError:
             return []
         return [{
@@ -262,10 +266,12 @@ class ImplementationHubController(http.Controller):
         if not self._is_portal_user():
             return request.not_found()
         try:
-            attachment = request.env["ir.binary"]._find_record(
-                model="ir.attachment", res_id=attachment_id,
-            )
-            if not attachment.implementation_hub_visible:
+            # Odoo 18's base attachment ACL does not let Portal users search
+            # ir.attachment directly. Read the metadata under sudo only for this
+            # supplied attachment ID, then validate the parent record as the
+            # actual Portal user before streaming any binary content.
+            attachment = request.env["ir.attachment"].sudo().browse(attachment_id).exists()
+            if not attachment or not attachment.implementation_hub_visible:
                 return request.not_found()
             if attachment.res_model not in self.PARENT_MODELS or not attachment.res_id:
                 return request.not_found()
@@ -281,8 +287,11 @@ class ImplementationHubController(http.Controller):
             else:
                 project = linked.project_id
                 resource_visible = bool(linked.implementation_hub_visible)
+            if not project:
+                return request.not_found()
+            project.check_access("read")
             if (
-                not resource_visible or not project
+                not resource_visible
                 or not project.implementation_hub_published
                 or not project.partner_id
             ):
@@ -299,7 +308,7 @@ class ImplementationHubController(http.Controller):
             if not (same_company or collaborator):
                 return request.not_found()
 
-            stream = request.env["ir.binary"]._get_stream_from(
+            stream = request.env["ir.binary"].sudo()._get_stream_from(
                 attachment, field_name="raw",
             )
             response = stream.get_response(as_attachment=True, max_age=0)
