@@ -1,0 +1,60 @@
+name: Odoo 18 core integration tests
+
+on:
+  push:
+    branches:
+      - test
+    paths:
+      - "implementation_hub/**"
+      - ".github/workflows/odoo18-core-test.yml"
+  pull_request:
+    branches:
+      - test
+    paths:
+      - "implementation_hub/**"
+      - ".github/workflows/odoo18-core-test.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  odoo18-core-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U odoo -d postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Implementation Hub in Odoo 18 and run module tests
+        run: |
+          docker run --rm --network host \
+            -e HOST=127.0.0.1 \
+            -e USER=odoo \
+            -e PASSWORD=odoo \
+            -v "$GITHUB_WORKSPACE/implementation_hub:/mnt/extra-addons/implementation_hub:ro" \
+            odoo:18.0 \
+            --addons-path=/usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons \
+            --database=implementation_hub_test \
+            --db_host=127.0.0.1 \
+            --db_port=5432 \
+            --db_user=odoo \
+            --db_password=odoo \
+            --init=implementation_hub \
+            --test-enable \
+            --stop-after-init \
+            --without-demo=all \
+            --log-level=test
