@@ -42,3 +42,5 @@ La rama pública `odoo/odoo:18.0` confirma APIs y componentes generales de Odoo 
 ## Validación pendiente de Enterprise
 
 La documentación pública de Odoo 18 y el repositorio público `odoo/odoo` permiten verificar la estructura base de Proyecto, Portal, Mail, OWL, activos, controladores y seguridad. No se dispone en esta sesión de acceso al repositorio privado `odoo/enterprise` ni a la base de datos CJG. Por eso no se afirma compatibilidad probada de Helpdesk, Documents ni otras personalizaciones Enterprise. La documentación oficial de Odoo explica que Community y Enterprise se obtienen desde repositorios separados y ambos deben corresponder a la rama 18.0: https://www.odoo.com/documentation/18.0/administration/on_premise/source.html.
+
+El repositorio también incluye scripts/audit_odoo18.py para detectar en la instancia destino si los modelos y campos utilizados están disponibles y qué ACL/reglas están instaladas. La ejecución de ese script es necesaria para confirmar compatibilidad sobre la base CJG concreta.
