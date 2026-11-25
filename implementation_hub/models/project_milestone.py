@@ -14,9 +14,25 @@ class ProjectMilestone(models.Model):
     def create(self, vals_list):
         if any(vals.get("implementation_hub_visible") for vals in vals_list) and not self.env.user.has_group("project.group_project_manager"):
             raise AccessError(_("Solo un administrador de Proyectos puede publicar hitos en Implementation Hub."))
-        return super().create(vals_list)
+        records = super().create(vals_list)
+        for record in records.filtered("implementation_hub_visible"):
+            record.project_id._implementation_hub_log_resource(
+                record._name, record.id, record.display_name, True
+            )
+        return records
 
     def write(self, vals):
         if "implementation_hub_visible" in vals and not self.env.user.has_group("project.group_project_manager"):
             raise AccessError(_("Solo un administrador de Proyectos puede cambiar la publicación en Implementation Hub."))
-        return super().write(vals)
+        previous = {record.id: record.implementation_hub_visible for record in self}
+        result = super().write(vals)
+        if "implementation_hub_visible" in vals:
+            for record in self:
+                if previous[record.id] != record.implementation_hub_visible:
+                    record.project_id._implementation_hub_log_resource(
+                        record._name,
+                        record.id,
+                        record.display_name,
+                        record.implementation_hub_visible,
+                    )
+        return result
