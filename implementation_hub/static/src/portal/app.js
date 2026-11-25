@@ -76,7 +76,7 @@ export class ImplementationHubPortal extends Component {
 
     get summary() {
         return this.state.data?.summary || {
-            total: 0, active: 0, done: 0, delayed: 0,
+            total: 0, active: 0, done: 0, pending: 0, delayed: 0,
         };
     }
 
